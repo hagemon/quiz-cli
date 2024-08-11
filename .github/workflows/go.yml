@@ -29,3 +29,5 @@ jobs:
 
     - name: Release
       uses: goreleaser/goreleaser-action@v3
+      with:
+        args: release --clean
