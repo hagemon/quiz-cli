@@ -41,7 +41,7 @@ func newQuizModePage(pages *tview.Pages, metadata db.Metadata) (tview.Primitive,
 		switch index {
 		case 0:
 			quiz, err = db.GetAllQuiz(metadata.ID)
-			startIndex = 1500
+			startIndex = metadata.Loc
 		case 1:
 			quiz, err = db.GetErrorQuiz(metadata.ID)
 		case 2:
@@ -76,16 +76,14 @@ func newQuizModePage(pages *tview.Pages, metadata db.Metadata) (tview.Primitive,
 }
 
 func newQuizPage(pages *tview.Pages, quiz []db.Quiz, startIndex int) tview.Primitive {
-	quizString, optionsString, _ := formatQuiz(quiz[startIndex])
-	num_options := len(strings.Split(optionsString, "\n"))
-	quizContentView := tview.NewTextView().SetText(quizString).SetWrap(true)
-	optionsContentView := tview.NewTextView().SetText(optionsString).SetWrap(true).SetRegions(true).SetDynamicColors(true)
-	answerContentView := tview.NewTextView().SetText("").SetWrap(true)
+	var quizString, answerString string
+	quizString, answerString = formatQuiz(quiz[startIndex])
+	quizContentView := tview.NewTextView().SetText(quizString).SetWrap(true).SetRegions(true).SetDynamicColors(true)
+	promptView := tview.NewTextView().SetText("").SetTextAlign(tview.AlignCenter).SetRegions(true).SetDynamicColors(true)
 	contentview := tview.NewFlex().SetDirection(tview.FlexRow)
 	contentview.AddItem(tview.NewBox(), 1, 0, false).
 		AddItem(quizContentView, 0, 1, true).
-		AddItem(optionsContentView, 0, 1, true).
-		AddItem(answerContentView, 0, 1, true).
+		AddItem(promptView, 0, 1, false).
 		AddItem(tview.NewBox(), 0, 0, false)
 
 	quizLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
@@ -96,42 +94,53 @@ func newQuizPage(pages *tview.Pages, quiz []db.Quiz, startIndex int) tview.Primi
 	selectedOption := []string{}
 	showAnswer := false
 
+	nextQuiz := func() {
+		if startIndex+1 < len(quiz) {
+			startIndex++
+			quizContentView.Highlight("")
+			quizContentView.SetText(quizString)
+			selectedOption = []string{}
+			quizString, answerString = formatQuiz(quiz[startIndex])
+			quizContentView.SetText(quizString)
+			showAnswer = false
+		} else {
+			promptView.SetText("[green]Quiz Finished[green]🎉")
+		}
+	}
+
+	showAnswerAction := func() {
+		quizContentView.SetText(quizString + "\n\n" + answerString)
+		showAnswer = true
+	}
+
 	quizLayout.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch {
 		case event.Key() == tcell.KeyEsc:
 			pages.SwitchToPage("home")
 		case event.Rune() == ' ':
 			if !showAnswer {
+				db.UpdateQuizVisit(quiz[startIndex])
 				if strings.Join(selectedOption, "") == quiz[startIndex].Answer {
-					answerContentView.SetText("Correct")
+					nextQuiz()
 				} else {
-					answerContentView.SetText("Answer: " + quiz[startIndex].Answer)
+					db.UpdateQuizError(quiz[startIndex])
+					showAnswerAction()
 				}
-				showAnswer = true
 			} else {
-				optionsContentView.Highlight("")
-				answerContentView.SetText("")
-				selectedOption = []string{}
-				startIndex++
-				if startIndex < len(quiz) {
-					quizString, optionsString, _ := formatQuiz(quiz[startIndex])
-					quizContentView.SetText(quizString)
-					optionsContentView.SetText(optionsString)
-				}
-				showAnswer = false
+				nextQuiz()
 			}
 
 		case event.Rune() == 'E' || event.Rune() == 'e':
-			showAnswer = true
+			db.UpdateQuizError(quiz[startIndex])
+			showAnswerAction()
 		case event.Rune() >= '1' && event.Rune() <= '9':
-			if event.Rune() > rune(num_options+'0') {
+			if event.Rune() > rune(quiz[startIndex].OptionsNum+'0') {
 				return event
 			}
 			option := string('A' + event.Rune() - '1')
 			if quiz[startIndex].QuizType == "多选题" {
 				if contains(selectedOption, option) {
 					selectedOption = remove(selectedOption, option)
-
 				} else {
 					selectedOption = append(selectedOption, option)
 				}
@@ -142,7 +151,7 @@ func newQuizPage(pages *tview.Pages, quiz []db.Quiz, startIndex int) tview.Primi
 					selectedOption[0] = option
 				}
 			}
-			optionsContentView.Highlight(selectedOption...)
+			quizContentView.Highlight(selectedOption...)
 
 		}
 
@@ -151,7 +160,7 @@ func newQuizPage(pages *tview.Pages, quiz []db.Quiz, startIndex int) tview.Primi
 	return quizLayout
 }
 
-func formatQuiz(quiz db.Quiz) (string, string, string) {
+func formatQuiz(quiz db.Quiz) (string, string) {
 	options := strings.Split(quiz.Options, "$$")
 	for i, option := range options {
 		if option != "" {
@@ -159,9 +168,9 @@ func formatQuiz(quiz db.Quiz) (string, string, string) {
 		}
 	}
 	optionsString := strings.Join(options, "\n")
-	quizString := fmt.Sprintf("%s\n%s", quiz.QuizType, quiz.Question)
-	answerString := fmt.Sprintf("Answer: %s", quiz.Answer)
-	return quizString, optionsString, answerString
+	quizString := fmt.Sprintf("%s\n%s\n\n%s", quiz.QuizType, quiz.Question, optionsString)
+	answerString := fmt.Sprintf("[red]Answer: %s[red]", quiz.Answer)
+	return quizString, answerString
 }
 
 func contains(selectedOption []string, option string) bool {

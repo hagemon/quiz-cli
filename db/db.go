@@ -23,6 +23,7 @@ type Quiz struct {
 	Analysis   string `db:"analysis"`
 	Difficulty string `db:"difficulty"`
 	Options    string `db:"options"`
+	OptionsNum int    `db:"options_num"`
 	QuizType   string `db:"quiz_type"`
 	IsError    bool   `db:"is_error"`
 	IsVisited  bool   `db:"is_visited"`
@@ -51,6 +52,7 @@ func InitDB(dbPath string) error {
 		analysis TEXT NOT NULL,
 		difficulty TEXT NOT NULL,
 		options TEXT NOT NULL,
+		options_num INT NOT NULL,
 		quiz_type TEXT NOT NULL,
 		is_error BOOLEAN NOT NULL DEFAULT FALSE,
 		is_visited BOOLEAN NOT NULL DEFAULT FALSE

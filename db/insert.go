@@ -13,7 +13,7 @@ func InsertQuizzes(quizzes []Quiz) error {
 	}
 	defer db.Close()
 	for _, quiz := range quizzes {
-		_, err = db.Exec(`INSERT INTO quiz (question, answer, analysis, difficulty, options, quiz_type, quiz_id) VALUES (:question, :answer, :analysis, :difficulty, :options, :quiz_type, :quiz_id)`, quiz.Question, quiz.Answer, quiz.Analysis, quiz.Difficulty, quiz.Options, quiz.QuizType, quiz.QuizID)
+		_, err = db.Exec(`INSERT INTO quiz (question, answer, analysis, difficulty, options, options_num, quiz_type, quiz_id) VALUES (:question, :answer, :analysis, :difficulty, :options, :options_num, :quiz_type, :quiz_id)`, quiz.Question, quiz.Answer, quiz.Analysis, quiz.Difficulty, quiz.Options, quiz.OptionsNum, quiz.QuizType, quiz.QuizID)
 		if err != nil {
 			return err
 		}

@@ -121,7 +121,7 @@ func GetAllQuiz(quizID int) ([]Quiz, error) {
 
 	for rows.Next() {
 		var quiz Quiz
-		err = rows.Scan(&quiz.ID, &quiz.QuizID, &quiz.Question, &quiz.Answer, &quiz.Analysis, &quiz.Difficulty, &quiz.Options, &quiz.QuizType, &quiz.IsError, &quiz.IsVisited)
+		err = rows.Scan(&quiz.ID, &quiz.QuizID, &quiz.Question, &quiz.Answer, &quiz.Analysis, &quiz.Difficulty, &quiz.Options, &quiz.OptionsNum, &quiz.QuizType, &quiz.IsError, &quiz.IsVisited)
 		if err != nil {
 			return nil, err
 		}
@@ -159,7 +159,7 @@ func GetErrorQuiz(quizID int) ([]Quiz, error) {
 
 	for rows.Next() {
 		var quiz Quiz
-		err = rows.Scan(&quiz.ID, &quiz.QuizID, &quiz.Question, &quiz.Answer, &quiz.Analysis, &quiz.Difficulty, &quiz.Options, &quiz.QuizType, &quiz.IsError, &quiz.IsVisited)
+		err = rows.Scan(&quiz.ID, &quiz.QuizID, &quiz.Question, &quiz.Answer, &quiz.Analysis, &quiz.Difficulty, &quiz.Options, &quiz.OptionsNum, &quiz.QuizType, &quiz.IsError, &quiz.IsVisited)
 		if err != nil {
 			return nil, err
 		}

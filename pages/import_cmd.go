@@ -248,7 +248,10 @@ func insertQuizzes(metadata_id int, sheet *xlsx.Sheet, answers []string) error {
 		cells := row.Cells
 		var options []string
 		for i := start; i < end; i++ {
-			options = append(options, cells[i-1].String())
+			optionString := cells[i-1].String()
+			if optionString != "" {
+				options = append(options, optionString)
+			}
 		}
 		analysis := ""
 		if analysisIndex != -1 {
@@ -265,6 +268,7 @@ func insertQuizzes(metadata_id int, sheet *xlsx.Sheet, answers []string) error {
 			Analysis:   analysis,
 			Difficulty: difficulty,
 			Options:    strings.Join(options, "$$"),
+			OptionsNum: len(options),
 			QuizType:   cells[quizTypeIndex-1].String(),
 		}
 		quizzes = append(quizzes, quiz)
