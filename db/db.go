@@ -87,6 +87,8 @@ func GetDBPath() (string, error) {
 		err = os.MkdirAll(dbDir, 0755)
 		if err != nil {
 			return "", err
+		} else {
+			log.Println("Database created at:", dbDir)
 		}
 	}
 	return dbpath, nil

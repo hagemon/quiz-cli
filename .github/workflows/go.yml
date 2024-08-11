@@ -22,10 +22,10 @@ jobs:
         go-version: '1.22.0'
 
     - name: Build
-      run: go build -v -o quiz ./...
+      run: go build -v -o quiz .
 
     - name: Test
-      run: go test ./...
+      run: go test .
 
     - name: Release
       uses: goreleaser/goreleaser-action@v3

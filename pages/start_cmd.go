@@ -168,7 +168,7 @@ func formatQuiz(quiz db.Quiz) (string, string) {
 		}
 	}
 	optionsString := strings.Join(options, "\n")
-	quizString := fmt.Sprintf("%s\n%s\n\n%s", quiz.QuizType, quiz.Question, optionsString)
+	quizString := fmt.Sprintf("%s\n%d.%s\n\n%s", quiz.QuizType, quiz.ID, quiz.Question, optionsString)
 	answerString := fmt.Sprintf("[red]Answer: %s[red]", quiz.Answer)
 	return quizString, answerString
 }

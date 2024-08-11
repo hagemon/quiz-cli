@@ -13,8 +13,6 @@ github.com/mattn/go-runewidth v0.0.15 h1:UNAjwbU9l54TA3KzvqLGxwWjHmMgBUVhBiTjelZ
 github.com/mattn/go-runewidth v0.0.15/go.mod h1:Jdepj2loyihRzMpdS35Xk/zdY8IAYHsh153qUoGf23w=
 github.com/mattn/go-sqlite3 v1.14.22 h1:2gZY6PC6kBnID23Tichd1K+Z0oS6nE/XwU+Vz/5o4kU=
 github.com/mattn/go-sqlite3 v1.14.22/go.mod h1:Uh1q+B4BYcTPb+yiD3kU8Ct7aC0hY9fxUwlHK0RXw+Y=
-github.com/rivo/tview v0.0.0-20240625185742-b0a7293b8130 h1:o1CYtoFOm6xJK3DvDAEG5wDJPLj+SoxUtUDFaQgt1iY=
-github.com/rivo/tview v0.0.0-20240625185742-b0a7293b8130/go.mod h1:02iFIz7K/A9jGCvrizLPvoqr4cEIx7q54RH5Qudkrss=
 github.com/rivo/tview v0.0.0-20240728114935-65571ae51e71 h1:lU8yiVCOA/uS4fRto0Xxw2oUWVvJyAJBBJz8LhuhVys=
 github.com/rivo/tview v0.0.0-20240728114935-65571ae51e71/go.mod h1:02iFIz7K/A9jGCvrizLPvoqr4cEIx7q54RH5Qudkrss=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
