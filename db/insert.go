@@ -1,12 +1,12 @@
 package db
 
 import (
-	"database/sql"
 	"log"
 )
 
 func InsertQuizzes(quizzes []Quiz) error {
-	db, err := sql.Open("sqlite3", "./quiz.db")
+
+	db, err := OpenDB()
 	if err != nil {
 		log.Fatal(err)
 		return err
@@ -25,7 +25,8 @@ func InsertQuizzes(quizzes []Quiz) error {
 }
 
 func InsertMetadata(metadata Metadata) (int, error) {
-	db, err := sql.Open("sqlite3", "./quiz.db")
+
+	db, err := OpenDB()
 	if err != nil {
 		log.Fatal(err)
 		return 0, err

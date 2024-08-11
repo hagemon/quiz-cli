@@ -3,6 +3,9 @@ package db
 import (
 	"database/sql"
 	"log"
+	"os"
+	"os/user"
+	"path/filepath"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -29,8 +32,9 @@ type Quiz struct {
 	IsVisited  bool   `db:"is_visited"`
 }
 
-func InitDB(dbPath string) error {
-	db, err := sql.Open("sqlite3", dbPath)
+func InitDB() error {
+
+	db, err := OpenDB()
 	if err != nil {
 		return err
 	}
@@ -70,4 +74,33 @@ func InitDB(dbPath string) error {
 
 	log.Println("Database and table initialized successfully.")
 	return nil
+}
+
+func GetDBPath() (string, error) {
+	usr, err := user.Current()
+	if err != nil {
+		return "", err
+	}
+	dbpath := filepath.Join(usr.HomeDir, ".quiz", "quiz.db")
+	dbDir := filepath.Dir(dbpath)
+	if _, err := os.Stat(dbDir); os.IsNotExist(err) {
+		err = os.MkdirAll(dbDir, 0755)
+		if err != nil {
+			return "", err
+		}
+	}
+	return dbpath, nil
+
+}
+
+func OpenDB() (*sql.DB, error) {
+	dbpath, err := GetDBPath()
+	if err != nil {
+		return nil, err
+	}
+	db, err := sql.Open("sqlite3", dbpath)
+	if err != nil {
+		return nil, err
+	}
+	return db, nil
 }

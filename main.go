@@ -17,7 +17,7 @@ func main() {
 	defer logFile.Close()
 	log.SetOutput(logFile)
 
-	err = db.InitDB("quiz.db")
+	err = db.InitDB()
 	if err != nil {
 		log.Fatalf("Failed to initialize database: %v", err)
 		os.Exit(1)

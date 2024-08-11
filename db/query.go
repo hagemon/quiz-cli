@@ -25,7 +25,7 @@ func QueryMetadata() ([]Metadata, error) {
 }
 
 func query(query string, target interface{}) ([]interface{}, error) {
-	db, err := sql.Open("sqlite3", "./quiz.db")
+	db, err := OpenDB()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -73,7 +73,7 @@ func query(query string, target interface{}) ([]interface{}, error) {
 }
 
 func CheckQuizID(quizID string) (bool, error) {
-	db, err := sql.Open("sqlite3", "./quiz.db")
+	db, err := OpenDB()
 	if err != nil {
 		log.Fatal(err)
 		return false, err
@@ -88,7 +88,7 @@ func CheckQuizID(quizID string) (bool, error) {
 }
 
 func GetQuizInfo(quizID string) (Metadata, error) {
-	db, err := sql.Open("sqlite3", "./quiz.db")
+	db, err := OpenDB()
 	if err != nil {
 		log.Fatal(err)
 		return Metadata{}, err
@@ -106,7 +106,7 @@ func GetQuizInfo(quizID string) (Metadata, error) {
 }
 
 func GetAllQuiz(quizID int) ([]Quiz, error) {
-	db, err := sql.Open("sqlite3", "./quiz.db")
+	db, err := OpenDB()
 	if err != nil {
 		return nil, err
 	}
@@ -144,7 +144,7 @@ func GetRandomQuiz(quizID int, num int) ([]Quiz, error) {
 }
 
 func GetErrorQuiz(quizID int) ([]Quiz, error) {
-	db, err := sql.Open("sqlite3", "./quiz.db")
+	db, err := OpenDB()
 	if err != nil {
 		return nil, err
 	}

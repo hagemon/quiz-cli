@@ -23,9 +23,6 @@ func NewHomePage(app *tview.Application) tview.Primitive {
 	homeLayout := tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(textView, linesCount, 1, true)
 
-	// homeLayout := tview.NewFlex().SetDirection(tview.FlexRow).
-	// 	AddItem(innerLayout, 0, 1, true)
-
 	pages := tview.NewPages().AddPage("home", homeLayout, true, true)
 
 	// add action
