@@ -37,8 +37,16 @@ jobs:
     - name: Test
       run: go test .
 
+  create-release:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        arch: [amd64]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
     - name: Create Release
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       id: create_release
       uses: actions/create-release@v1
       env:
@@ -48,14 +56,38 @@ jobs:
         release_name: Release v${{ github.run_number }}
         draft: false
         prerelease: false
+    - name: Output Upload URL
+      run: echo "upload_url=${{ steps.create_release.outputs.upload_url }}" >> $GITHUB_OUTPUT
 
+  upload-assets:
+    needs: create-release
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        arch: [amd64, arm64]
+        exclude:
+          - os: windows-latest
+            arch: arm64
+    runs-on: ${{ matrix.os }}
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.22.0'
+    - name: Build
+      env:
+        GOOS: ${{ matrix.os == 'windows-latest' && 'windows' || matrix.os == 'macos-latest' && 'darwin' || 'linux' }}
+        GOARCH: ${{ matrix.arch }}
+      run: |
+        go build -v -o quiz-${{ env.GOOS }}-${{ matrix.arch }}${{ matrix.os == 'windows-latest' && '.exe' || '' }} .
     - name: Upload Release Asset
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        upload_url: ${{ needs['create-release'].outputs.upload_url }}
         asset_path: ./quiz-${{ matrix.os == 'windows-latest' && 'windows' || matrix.os == 'macos-latest' && 'darwin' || 'linux' }}-${{ matrix.arch }}${{ matrix.os == 'windows-latest' && '.exe' || '' }}
         asset_name: quiz-${{ matrix.os == 'windows-latest' && 'windows' || matrix.os == 'macos-latest' && 'darwin' || 'linux' }}-${{ matrix.arch }}${{ matrix.os == 'windows-latest' && '.exe' || '' }}
         asset_content_type: application/octet-stream
